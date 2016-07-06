@@ -79,86 +79,108 @@ DMRGP::DMRGP(Parameter& para)
                 outfile1.open("./result/resonator.txt");
                 
                 outfile2.open("./result/qubit.txt");
-                }else
-                {
+        }else
+        {
                                         
-                        outfile1.open("./result/resonator.txt");
+                outfile1.open("./result/resonator.txt");
                                         
-                        outfile2.open("./result/qubit.txt");
-                }
+                outfile2.open("./result/qubit.txt");
+        }
 
-                int i(OrbitalM + 1);//this label for Sigma;
-                int j(OrbitalM - 1);//this label for Sigmadag and N;
-                int fflag(1);
-                while(true)
-                {
+        int i(OrbitalM + 1);//this label for Sigma;
+        int j(OrbitalM - 1);//this label for Sigmadag and N;
+        int fflag(1);
+
+        double CorrLenth(0);
+        double CorrSum(0);
+        while(true)
+        {
                                         
                                         
 
-                        corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
+                corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
                                         //corrn.show();Sys.SubSysEye.show();
 
-                        CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
+                CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
+                
 
-                        int distence(i - j);
+                int distence(i - j);
 
-                        std::cout<<"Distence = " << distence << ", the correlation = "
-                        <<correlation<<std::endl;
-                        outfile1<<"Distence = " << distence << ", the correlation = "
-                        <<correlation<<std::endl;
+                std::cout<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;
+                outfile1<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;
+                CorrLenth += pow((i-j)/2, 2)*correlation;
+                
+                CorrSum =correlation;
+        
 
-
-                        if(fflag == 1)
-                        {
-                                i += 2;
-                        }else
-                        {
-                                j-= 2;
-                        }
-                        if((i>para.LatticeSize/2)||(j<0))break;
-                        fflag *= -1;
-
-
-                }
-
-
-
-                i=(OrbitalM + 2);//this label for Sigma;
-                j=(OrbitalM - 2);//this label for Sigmadag and N;
-                fflag=1;
-                while(true)
+                if(fflag == 1)
                 {
-                                        
-                                        
-
-                        corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
-                        //corrn.show();Sys.SubSysEye.show();
-
-                        CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
-
-                        int distence(i - j);
-
-                        std::cout<<"Distence = " << distence << ", the correlation = "
-                        <<correlation<<std::endl;
-                        outfile2<<"Distence = " << distence << ", the correlation = "
-                        <<correlation<<std::endl;
-
-
-                        if(fflag == 1)
-                        {
-                                i += 2;
-                        }else
-                        {
-                                j-= 2;
-                        }
-                        if((i>para.LatticeSize/2)||(j<0))break;
-                        fflag *= -1;
-
-
+                        i += 2;
+                }else
+                {
+                        j-= 2;
                 }
+                if((i>para.LatticeSize/2)||(j<0))break;
+                fflag *= -1;
 
-                outfile1.close();
-                outfile2.close();
+
+        }
+        
+        CorrLenth = CorrLenth/CorrSum;
+
+        Fdata << "the Qubit correlation = " <<CorrLenth<<std::endl;
+        std::cout << "the Qubit correlation = " <<CorrLenth<<std::endl;
+
+
+
+        i=(OrbitalM + 2);//this label for Sigma;
+        j=(OrbitalM - 2);//this label for Sigmadag and N;
+        fflag=1;
+        CorrLenth = 0;
+        CorrSum = 0;
+        while(true)
+        {
+                                        
+                                        
+
+                corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
+                //corrn.show();Sys.SubSysEye.show();
+
+                CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
+                CorrLenth += pow((i-j)/2, 2)*correlation;
+                CorrSum += correlation;
+
+                int distence(i - j);
+
+                std::cout<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;
+                outfile2<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;
+
+
+                if(fflag == 1)
+                {
+                        i += 2;
+                }else
+                {
+                        j-= 2;
+                }
+                if((i>para.LatticeSize/2)||(j<0))break;
+                fflag *= -1;
+
+
+        }
+
+        CorrLenth /= CorrSum;
+
+        Fdata << "the Resonator correlation = " <<CorrLenth<<std::endl;
+        std::cout << "the Resonator correlation = " <<CorrLenth<<std::endl;
+
+
+        outfile1.close();
+        outfile2.close();
 //======================================================================================================
 	allT = difftime(clock(), Abegin) / CLOCKS_PER_SEC;
 	SaveAll << "===========Sweep finished==============" << std::endl;
@@ -845,7 +867,7 @@ void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
 	{
 		correlation += f[i]*f1[i];
 	}
-	correlation /= number;
+	//correlation /= number;
 
 
 }
@@ -862,9 +884,15 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                         //if(OrbitalN == para.LatticeSize/4 + 1) return;
                         corr.Initial(Env, m, OrbitalM, 1, truncU);
                         corr.save();
+                        corr.Initial(Env, m, OrbitalM, 3, truncU);
+                        corr.save();
                         for(int i = para.LatticeSize/2; i > OrbitalM; --i)
                         {
                                 corr.read(i, 1);
+                                corr.update(m, truncU, 1);
+                                corr.save();
+
+                                corr.read(i, 3);
                                 corr.update(m, truncU, 1);
                                 corr.save();
                         }
@@ -874,6 +902,13 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                         for(int i = para.LatticeSize/2; i >= OrbitalN; --i)
                         {
                                 corr.read(i, 1);
+                                corr.update(n, truncU, 2);
+                                corr.save();
+
+                                corr.read(i, 3);
+                                
+                                //corr.corro().show();
+                                
                                 corr.update(n, truncU, 2);
                                 corr.save();
                         }
