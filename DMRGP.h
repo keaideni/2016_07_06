@@ -25,9 +25,9 @@ public:
 
 	QWave fwave;//to store the final wavefunction.
 //===============to store the transform wave=========================
-        QWave startwave, startwaveL, startwaveR;//to store the ground wave.
-        QWave initwave, initwaveL, initwaveR;//to store the initial wave.
-        QWave onewave, onewaveL, onewaveR;//to store the onestep wave.
+        QWave startwave;//to store the ground wave.
+        QWave initwave;//to store the initial wave.
+        QWave onewave;//to store the onestep wave.
 //====================================================================
         //used to define the order of the one step and two step;
         int calnonestepSM, calnonestepSN, calnonestepEM, calnonestepEN;
@@ -52,7 +52,7 @@ public:
 
 
 
-	double LEnergy, Energy, REnergy;
+	double Energy;
 	OP DenOPWave;
 
 	double FEnergy;
