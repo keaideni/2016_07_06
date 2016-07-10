@@ -1444,6 +1444,8 @@ void OP::save(std::ofstream& outfile)
 	{
                 outfile << it->first << std::endl;
 
+                outfile<< it->second.rows() << "     " <<it->second.cols()<<std::endl;
+
 		outfile << it->second << std::endl;
 		/*for(int i=0; i<it->second.n_rows; i++)
 		{
@@ -1473,6 +1475,7 @@ void OP::read(std::ifstream& infile)
 	}*/
 
 	//read in the QDim.
+	clear();
 	int size1;
 	infile >> size1;
 
@@ -1506,10 +1509,14 @@ void OP::read(std::ifstream& infile)
 
                 infile >> tempQR;
 
-		MatrixXd A(QDim.at(RLQ.at(tempQR)), QDim.at(tempQR));
-		for (int i = 0; i < QDim.at(RLQ.at(tempQR)); i++)
+                int row, col;
+
+                infile >> row >> col;
+
+		MatrixXd A(row, col);
+		for (int i = 0; i < row; i++)
 		{
-			for (int j = 0; j < QDim.at(tempQR); j++)
+			for (int j = 0; j < col; j++)
 			{
 				infile >> A(i, j);
 

@@ -526,6 +526,34 @@ void QWave::clear()
 
 
 
+void QWave::save()
+{
+	std::ofstream outfile("./Corr/QWave");
+	for(auto it = WavePart.begin(); it != WavePart.end(); ++it)
+	{
+		outfile << it->first.first <<"    "<<it->first.second<<std::endl;
+		it->second.save(outfile);
+	}
+}
+
+void QWave::read(std::ifstream& infile)
+{
+	int QL, QR;
+	
+	while(true)
+	{
+		infile >> QL >> QR;if(!infile.good()) break;
+		//std::cout<<"<<"<<QL<<","<<QR<<">>"<<std::endl;
+		OP temp;
+
+		temp.read(infile);
+
+		WavePart[std::pair<int, int>(QL, QR)] = temp;
+	}
+}
+
+
+
 
 
 

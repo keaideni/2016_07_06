@@ -63,6 +63,9 @@ public:
 	void show() const;
 	void clear();
 
+	void save();
+	void read(std::ifstream& infile);
+
 
 	//=============the partition of OPWave======================
 	//|WavePart> = O |wave>

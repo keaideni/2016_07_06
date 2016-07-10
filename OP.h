@@ -29,7 +29,7 @@ class OP
 {
 public:
 	std::unordered_map<int, int> QDim;
-	std::unordered_map<int, MatrixXd> QMat;
+	std::map<int, MatrixXd> QMat;
 	std::unordered_map<int, int> RLQ;
 
 

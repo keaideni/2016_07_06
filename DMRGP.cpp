@@ -106,13 +106,13 @@ DMRGP::DMRGP(Parameter& para)
 
                 int distence(i - j);
 
-                std::cout<<"Distence = " << distence << ", the correlation = "
-                <<correlation<<std::endl;
+                /*std::cout<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;*/
                 outfile1<<"Distence = " << distence << ", the correlation = "
                 <<correlation<<std::endl;
                 CorrLenth += pow((i-j)/2, 2)*correlation;
                 
-                CorrSum =correlation;
+                CorrSum +=correlation;
         
 
                 if(fflag == 1)
@@ -131,7 +131,7 @@ DMRGP::DMRGP(Parameter& para)
         CorrLenth = CorrLenth/CorrSum;
 
         Fdata << "the Qubit correlation = " <<CorrLenth<<std::endl;
-        std::cout << "the Qubit correlation = " <<CorrLenth<<std::endl;
+        //std::cout << "the Qubit correlation = " <<CorrLenth<<std::endl;
 
 
 
@@ -154,8 +154,8 @@ DMRGP::DMRGP(Parameter& para)
 
                 int distence(i - j);
 
-                std::cout<<"Distence = " << distence << ", the correlation = "
-                <<correlation<<std::endl;
+                /*std::cout<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;*/
                 outfile2<<"Distence = " << distence << ", the correlation = "
                 <<correlation<<std::endl;
 
@@ -176,7 +176,7 @@ DMRGP::DMRGP(Parameter& para)
         CorrLenth /= CorrSum;
 
         Fdata << "the Resonator correlation = " <<CorrLenth<<std::endl;
-        std::cout << "the Resonator correlation = " <<CorrLenth<<std::endl;
+        //std::cout << "the Resonator correlation = " <<CorrLenth<<std::endl;
 
 
         outfile1.close();
@@ -187,7 +187,20 @@ DMRGP::DMRGP(Parameter& para)
 	SaveAll << "The build up process takes " << allT << " seconds!" << std::endl;
 	SaveAll << "The eigenstate calculation takes " << saveT << " seconds!" << std::endl;
 	SaveAll.close();
+//===========================save the final wave==========================================
+        fwave.save();
+        //fwave.show();
 
+        QWave tempwave;
+        std::ifstream infile("./Corr/QWave");
+        if(!infile.is_open())
+        {
+                std::cout<<"the ./Corr/QWave file doesn't open!"<<std::endl;
+        }
+        //std::cout<<"haha"<<std::endl;
+
+        tempwave.read(infile);
+        //tempwave.show();
 	
 
 
@@ -306,10 +319,10 @@ void DMRGP::getEnergyP(Parameter& para, int dir)
 		<< ",    truncerr = " << std::setprecision(15) << truncerr << std::endl;
 
 
-	std::cout << "Q = " << qtot << "    WaveD = " <<std::setw(4)<< Sup.Dim
+	/*std::cout << "Q = " << qtot << "    WaveD = " <<std::setw(4)<< Sup.Dim
 	<< "      OS ="  <<std::setw(2)<<Sys.Orbital << ",  OE =" <<std::setw(2)<< Env.Orbital
 	<< ",    E = " <<std::setw(10)<< std::setprecision(15)<<para.Energy <<",    trace = "<< std::setprecision(15)<<trace
-	<<",    truncerr = "<< std::setprecision(15)<<truncerr<<std::endl;
+	<<",    truncerr = "<< std::setprecision(15)<<truncerr<<std::endl;*/
 	//FEnergy = para.Energy;
 	//FTrace = trace;
 	//FTruncerr = truncerr;
@@ -393,7 +406,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 	{
 
 		SaveAll << "the " << (flag + 1) << "th Sweep" << std::endl;
-		std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
+		//std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
 		//dir*=(-1);//local here for the first left direction sweep
 
 
@@ -574,10 +587,10 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                 << ",    trace = " << std::setprecision(15) << FTrace
                 << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
                 <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
-        std::cout << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
+        /*std::cout << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
                 << ",    trace = " << std::setprecision(15) << FTrace
                 << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
-                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
+                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;*/
         
 }
 
@@ -663,11 +676,11 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 
 
-	std::cout << "Q = " << qtot << ",    E = " << std::setprecision(15)<<Energy <<std::endl
+	/*std::cout << "Q = " << qtot << ",    E = " << std::setprecision(15)<<Energy <<std::endl
 	<< "      OS ="  <<std::setw(2)<<Sys.Orbital << ",  OE =" <<std::setw(2)<< Env.Orbital
         << "      OrbitalM ="  <<std::setw(2)<<OrbitalM << ",  OrbitalN =" <<std::setw(2)<< OrbitalN
 	<<",    trace = "<< std::setprecision(15)<<trace
-	<<",    truncerr = "<< std::setprecision(15)<<truncerr << std::endl<<std::endl;
+	<<",    truncerr = "<< std::setprecision(15)<<truncerr << std::endl<<std::endl;*/
 
 	if (Sys.Orbital == (para.LatticeSize - 2) / 2)
 	{
@@ -868,6 +881,7 @@ void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
 		correlation += f[i]*f1[i];
 	}
 	//correlation /= number;
+        //std::cout<<number<<std::endl;
 
 
 }
