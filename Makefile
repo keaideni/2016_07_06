@@ -24,7 +24,7 @@ LIBSPECTRA = -I/media/xuejian/WORK/spectra/spectra-0.2.0/spectra-0.2.0/include/ 
 obj=main.o Parameter.o OP.o Sub.o QWave.o Super.o DMRGP.o Corr.o
 main:$(obj)
 	$(CCCOM) -o main $(obj)  $(LIBSPECTRA)
-main.o:main.cpp DMRGP.h
+main.o:main.cpp DMRGP.h physics.h
 	$(CCCOM) -c main.cpp $(LIBSPECTRA)
 Parameter.o:Parameter.h Parameter.cpp
 	$(CCCOM) -c Parameter.cpp -O2 $(LIBSPECTRA)

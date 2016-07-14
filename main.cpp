@@ -2,6 +2,7 @@
 #include "OP.h"
 #include "SuperEnergy.h"
 #include "DMRGP.h"
+#include "physics.h"
 
 
 
@@ -22,6 +23,11 @@ int main()
 
 
 	DMRGP DMRG(para);
+	//DMRG.fwave.show();
+
+	std::ofstream Fdata("./result/data", std::ios_base::out | std::ios_base::app);
+	CalcuCorr(para.ParticleNo/2+1, DMRG.fwave, Fdata);
+	Fdata.close();
 
 
 	

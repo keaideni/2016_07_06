@@ -72,7 +72,7 @@ DMRGP::DMRGP(Parameter& para)
         caln = 0;
 	SweepP(para, OS, OE, dir);
 //=========================calculate the correlation==================================
-        std::ofstream outfile1, outfile2;
+        /*std::ofstream outfile1, outfile2;
         if(OrbitalM % 2 == 1)
         {
                                         
@@ -106,8 +106,8 @@ DMRGP::DMRGP(Parameter& para)
 
                 int distence(i - j);
 
-                /*std::cout<<"Distence = " << distence << ", the correlation = "
-                <<correlation<<std::endl;*/
+                std::cout<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;
                 outfile1<<"Distence = " << distence << ", the correlation = "
                 <<correlation<<std::endl;
                 CorrLenth += pow((i-j)/2, 2)*correlation;
@@ -131,7 +131,7 @@ DMRGP::DMRGP(Parameter& para)
         CorrLenth = CorrLenth/CorrSum;
 
         Fdata << "the Qubit correlation = " <<CorrLenth<<std::endl;
-        //std::cout << "the Qubit correlation = " <<CorrLenth<<std::endl;
+        std::cout << "the Qubit correlated length = " <<CorrLenth<<std::endl;
 
 
 
@@ -154,8 +154,8 @@ DMRGP::DMRGP(Parameter& para)
 
                 int distence(i - j);
 
-                /*std::cout<<"Distence = " << distence << ", the correlation = "
-                <<correlation<<std::endl;*/
+                std::cout<<"Distence = " << distence << ", the correlation = "
+                <<correlation<<std::endl;
                 outfile2<<"Distence = " << distence << ", the correlation = "
                 <<correlation<<std::endl;
 
@@ -176,11 +176,11 @@ DMRGP::DMRGP(Parameter& para)
         CorrLenth /= CorrSum;
 
         Fdata << "the Resonator correlation = " <<CorrLenth<<std::endl;
-        //std::cout << "the Resonator correlation = " <<CorrLenth<<std::endl;
+        std::cout << "the Resonator correled length = " <<CorrLenth<<std::endl;
 
 
         outfile1.close();
-        outfile2.close();
+        outfile2.close();*/
 //======================================================================================================
 	allT = difftime(clock(), Abegin) / CLOCKS_PER_SEC;
 	SaveAll << "===========Sweep finished==============" << std::endl;
@@ -191,7 +191,7 @@ DMRGP::DMRGP(Parameter& para)
         fwave.save();
         //fwave.show();
 
-        QWave tempwave;
+        /*QWave tempwave;
         std::ifstream infile("./Corr/QWave");
         if(!infile.is_open())
         {
@@ -199,7 +199,7 @@ DMRGP::DMRGP(Parameter& para)
         }
         //std::cout<<"haha"<<std::endl;
 
-        tempwave.read(infile);
+        tempwave.read(infile);*/
         //tempwave.show();
 	
 
@@ -880,7 +880,7 @@ void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
 	{
 		correlation += f[i]*f1[i];
 	}
-	//correlation /= number;
+	correlation /= number;
         //std::cout<<number<<std::endl;
 
 
