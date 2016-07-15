@@ -26,8 +26,12 @@ int main()
 	//DMRG.fwave.show();
 
 	std::ofstream Fdata("./result/data", std::ios_base::out | std::ios_base::app);
-	CalcuCorr(para.ParticleNo/2+1, DMRG.fwave, Fdata);
+	CalcuCorr(DMRG.OrbitalM, DMRG.fwave, Fdata);
 	Fdata.close();
+
+
+	calcudensity(DMRG.OrbitalM, DMRG.fwave, para.ParticleNo);
+
 
 
 	

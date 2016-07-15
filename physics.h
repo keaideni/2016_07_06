@@ -7,6 +7,40 @@ double CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag, const QWav
 double CacuCorr(const OP& corrc, const OP& corrcdag, const QWave& fwave);
 
 
+//=================calculate the product of two wave====================================
+double prod2wave(const QWave& wave1, const QWave& wave2);
+double prod2wave(const QWave& wave1, const QWave& wave2)
+{
+        double prod;
+        for(auto it = wave1.WavePart.begin(); it != wave1.WavePart.end(); ++it)
+        {
+                auto itt = wave2.WavePart.find(it->first);
+                if(itt != wave2.WavePart.end())
+                {
+                        for(auto matit1 = it->second.QMat.begin(); matit1 != it->second.QMat.end(); ++matit1)
+                        {
+                                auto matit2 = itt->second.QMat.find(matit1->first);
+                                if(matit2 != itt->second.QMat.end())
+                                {
+                                        if(it->second.RLQ.at(matit1->first) == itt->second.RLQ.at(matit1->first))
+                                        {
+                                                for(int i = 0; i < matit1->second.rows(); ++i)
+                                                {
+                                                        for(int j = 0; j < matit1->second.cols(); ++j)
+                                                        {
+                                                                prod += matit1->second(i,j)*matit2->second(i,j);
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
+        return prod;
+}
+//================================================================================================================
+
+
 //=================calculate two types of correlation function========================
 void CalcuCorr(const int& OrbitalM, const QWave& fwave, std::ofstream& Fdata)
 {
@@ -167,34 +201,38 @@ double CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag, const QWav
         
 
         QWave wave1, wave2;
-        std::vector<double> f, f1;
-        fwave.Wave2f(f);
-        QWave ffwave(fwave);
-        double number(0);
-        double correlation(0);
+        //std::vector<double> f, f1;
+        //fwave.Wave2f(f);
+        //QWave ffwave(fwave);
+        //double number(0);
+        //double correlation(0);
         wave1.clear();
         wave1.OSWave2New(corrn, fwave);
-        ffwave.initial(wave1);
-        ffwave.Wave2f(f1);
+        //ffwave.initial(wave1);
+        //ffwave.Wave2f(f1);
 
-        for(int i = 0; i < f.size(); ++i)
+        double number(prod2wave(fwave, wave1));
+
+        /*for(int i = 0; i < f.size(); ++i)
         {
                 number += f[i]*f1[i];
-        }
+        }*/
 
         wave1.clear();
         wave1.OSWave2New(corrcdag, fwave);
         wave2.clear();
         wave2.OEWave2New(corrc, wave1);
-        ffwave.initial(wave2);
-        ffwave.Wave2f(f1);
-        correlation = 0;
+        //ffwave.initial(wave2);
+        //ffwave.Wave2f(f1);
+        /*correlation = 0;
         for(int i = 0; i < f.size(); ++i)
         {
                 correlation += f[i]*f1[i];
         }
-        correlation /= number;
+        correlation /= number;*/
         //std::cout<<correlation<<std::endl;
+
+        double correlation(prod2wave(fwave, wave2)/number);
         
         return correlation;
         //std::cout<<number<<std::endl;
@@ -207,26 +245,28 @@ double CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag, const QWav
 double CacuCorr(const OP& corrc, const OP& corrcdag, const QWave& fwave)
 {
         QWave wave1, wave2;
-        std::vector<double> f, f1;
-        fwave.Wave2f(f);
-        QWave ffwave(fwave);
+        //std::vector<double> f, f1;
+        //fwave.Wave2f(f);
+        //QWave ffwave(fwave);
         
-        double correlation(0);
+        //double correlation(0);
 
         wave1.clear();
         wave1.OSWave2New(corrcdag, fwave);
         wave2.clear();
         wave2.OEWave2New(corrc, wave1);
-        ffwave.initial(wave2);
+        /*ffwave.initial(wave2);
         ffwave.Wave2f(f1);
         correlation = 0;
         for(int i = 0; i < f.size(); ++i)
         {
                 correlation += f[i]*f1[i];
-        }
+        }*/
+
+        return prod2wave(fwave, wave2);
         
         
-        return correlation;
+        //return correlation;
         //std::cout<<number<<std::endl;
 
 
@@ -236,3 +276,115 @@ double CacuCorr(const OP& corrc, const OP& corrcdag, const QWave& fwave)
 
 
 //===============calculate the density========================================================
+double density(const OP& corrn, const QWave& fwave, const int& OrbitalM, const int& orbital);
+double density(const OP& corrn, const QWave& fwave, const int& OrbitalM, const int& orbital)
+{
+
+        //double density(0);
+        //QWave ffwave(fwave);
+        QWave wave1;
+        //std::vector<double> f1, f2;
+
+        //fwave.Wave2f(f1);
+
+        if(orbital<OrbitalM)
+        {
+                wave1.OSWave2New(corrn, fwave);
+        }else if(orbital > OrbitalM)
+        {
+                wave1.OEWave2New(corrn, fwave);
+        }else
+        {
+                wave1.OMWave2New(corrn, fwave);
+        }
+
+        /*ffwave.initial(wave1);
+        ffwave.Wave2f(f2);
+
+        for(int i = 0; i < f2.size(); ++i)
+        {
+                density += f2.at(i)*f1.at(i);
+        }*/
+
+        return prod2wave(fwave, wave1);
+
+        //return density;
+
+}
+
+void calcudensity(const int& OrbitalM, const QWave& fwave, const int& endN);
+void calcudensity(const int& OrbitalM, const QWave& fwave, const int& endN)
+{
+
+        std::ofstream Qdensity("./result/Qdensity");
+        std::ofstream Rdensity("./result/Rdensity");
+        Corr corrn;
+        for(int i = 1; i < OrbitalM; ++i)
+        {
+                corrn.read(i, 3);
+                double den(density(corrn.CorrO, fwave, OrbitalM, corrn.orbital()));
+                if(i%2 == 1)
+                {
+                        Qdensity<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                        std::cout<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                }else
+                {
+                        Rdensity<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                        std::cout<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                }
+
+        }
+        Parameter para;
+        para.read();
+        Sub m(para, OrbitalM);
+
+        OP temp;
+        temp.time(m.SubSysCdag, m.SubSysC);
+
+        double den(density(temp, fwave, OrbitalM, OrbitalM));
+        if(OrbitalM%2 == 1)
+        {
+                Qdensity<<"site = " << OrbitalM << ", the density = "
+                <<den<<std::endl;
+                std::cout<<"site = " << OrbitalM << ", the density = "
+                <<den<<std::endl;
+        }else
+        {
+                Rdensity<<"site = " << OrbitalM << ", the density = "
+                <<den<<std::endl;
+                std::cout<<"site = " << OrbitalM << ", the density = "
+                <<den<<std::endl;
+        }
+
+
+        for(int i = OrbitalM+1; i <= endN; ++i)
+        {
+                corrn.read(i, 3);
+                double den(density(corrn.CorrO, fwave, OrbitalM, corrn.orbital()));
+                if(i%2 == 1)
+                {
+                        Qdensity<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                        std::cout<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                }else
+                {
+                        Rdensity<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                        std::cout<<"site = " << i << ", the density = "
+                        <<den<<std::endl;
+                }
+
+        }
+
+        Qdensity.close();
+        Rdensity.close();
+
+
+}
+
+//===================================================================================================

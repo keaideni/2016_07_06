@@ -853,7 +853,7 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 
 
 
-void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
+/*void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
 {
 	QWave wave1, wave2;
 	std::vector<double> f, f1;
@@ -884,7 +884,7 @@ void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
         //std::cout<<number<<std::endl;
 
 
-}
+}*/
 
 void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
 {
@@ -933,6 +933,12 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                 //when the block Sys eat the point m, the corr2 and corr3 begin to initialize and update.
                 if(OrbitalM == OrbitalN)
                 {
+                        if(OrbitalM == 2)
+                        {
+                                corr.Initial(Sys, m, 1, 4, truncU);
+                                corr.save();
+                        }
+                        
                         corr.Initial(Sys, m, OrbitalM, 2, truncU);
                         corr.save();
                         corr.Initial(Sys, m, OrbitalM, 3, truncU);
@@ -942,8 +948,11 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                                 corr.read(i, 2);
                                 corr.update(m, truncU, 1);
                                 corr.save();
+                        }
 
-
+                        for(int i = 1; i < OrbitalM; ++i)
+                        {
+                                if(OrbitalM == 2) break;
                                 corr.read(i, 3);
                                 corr.update(m, truncU, 1);
                                 corr.save();
@@ -960,7 +969,9 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                                 temp.kronO(n.SubSysEye, corr.corro());*/
                                 corr.update(n, truncU, 2);
                                 corr.save();
-
+                        }
+                        for(int i = 1; i <= OrbitalN; ++i)
+                        {
                                 corr.read(i, 3);
                                 
                                 //corr.corro().show();

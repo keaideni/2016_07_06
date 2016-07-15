@@ -19,21 +19,35 @@ void Corr::Initial(const Sub& sub,const Sub& subm, const int& orbital, const int
 {
         clear();
         Orbital = orbital;
-        Type = type;
+        if(type == 4)
+        {
+                Type = 3;
+        }else
+        {
+                Type = type;
+        }
         OP tempCorrO;
-        if(Type == 1)
+        if(type == 1)
         {
                 tempCorrO = subm.SubSysC;
 
-        }else if(Type == 2)
+        }else if(type == 2)
         {
                 tempCorrO = subm.SubSysCdag;
-        }else
+        }else if(type == 3)
         {
                 tempCorrO.time(subm.SubSysCdag, subm.SubSysC);
+        }else
+        {
+                tempCorrO.time(sub.SubSysCdag, sub.SubSysC);
         }
-
-        CorrO.kronO(sub.SubSysEye, tempCorrO);
+        if(type == 4)
+        {
+                CorrO.kronO(tempCorrO, subm.SubSysEye);
+        }else
+        {
+                CorrO.kronO(sub.SubSysEye, tempCorrO);
+        }
         CorrO.trunc(truncU_);
 
 
