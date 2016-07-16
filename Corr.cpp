@@ -34,16 +34,37 @@ void Corr::Initial(const Sub& sub,const Sub& subm, const int& orbital, const int
         }else if(type == 2)
         {
                 tempCorrO = subm.SubSysCdag;
-        }else if(type == 3)
+        }else if(type == 3)//initial for ni which except n1
         {
                 tempCorrO.time(subm.SubSysCdag, subm.SubSysC);
-        }else
+        }else if(type == 4)//initial for the n1
         {
                 tempCorrO.time(sub.SubSysCdag, sub.SubSysC);
+        }else if(type == 5)//initial for the n1n1
+        {
+                OP tempCorrO1;
+                tempCorrO1.time(sub.SubSysCdag, sub.SubSysC);
+                tempCorrO.time(tempCorrO1, tempCorrO1);
+        }else if(type == 6)//initialize the n1n2
+        {
+                OP tempCorrO1;
+                tempCorrO1.time(sub.SubSysCdag, sub.SubSysC);
+                tempCorrO.time(subm.SubSysCdag, subm.SubSysC);
+                CorrO.kronO(tempCorrO1, tempCorrO);
+                Type = 5;
+
+        }else if(type == 7)//initialize the n2n2
+        {
+                OP tempCorrO1;
+                tempCorrO1.time(subm.SubSysCdag, subm.SubSysC);
+                tempCorrO.time(tempCorrO1, tempCorrO1);
         }
-        if(type == 4)
+        if(type == 4 || type == 5)
         {
                 CorrO.kronO(tempCorrO, subm.SubSysEye);
+        }else if(type == 6)
+        {
+
         }else
         {
                 CorrO.kronO(sub.SubSysEye, tempCorrO);
@@ -51,6 +72,21 @@ void Corr::Initial(const Sub& sub,const Sub& subm, const int& orbital, const int
         CorrO.trunc(truncU_);
 
 
+}
+
+//initialize the n1ni and n2ni.
+void Corr::Initial(const Corr& corr, const Sub& m, const int& orbital, const int& type, const OP& truncU)
+{
+
+        clear();
+        Orbital = orbital;
+        Type = type;
+
+        OP tempCorrO;
+        tempCorrO.time(m.SubSysCdag, m.SubSysC);
+        CorrO.kronO(corr.CorrO, tempCorrO);
+
+        CorrO.trunc(truncU);
 }
 
 
@@ -109,9 +145,15 @@ void Corr::save()
         }else if(Type == 2)
         {
                 str = "./Corr/CDag" + str;
-        }else
+        }else if(Type == 3)//save the ni
         {
                 str = "./Corr/N" + str;
+        }else if(Type == 5)
+        {
+                str = "./Corr/N1N" + str;
+        }else
+        {
+                str = "./Corr/N2N" + str;
         }
 
         std::ofstream outfile(str);
@@ -135,9 +177,15 @@ void Corr::read(const int& orbital, const int& type)
         }else if(type == 2)
         {
                 str = "./Corr/CDag" + str;
-        }else
+        }else if(type == 3)
         {
                 str = "./Corr/N" + str;
+        }else if(type == 5)
+        {
+                str = "./Corr/N1N" + str;
+        }else
+        {
+                str = "./Corr/N2N" + str;
         }
 
         std::ifstream infile(str);

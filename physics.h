@@ -121,11 +121,11 @@ void CalcuCorr(const int& OrbitalM, const QWave& fwave, std::ofstream& Fdata)
         CorrLenth = CorrLenth/CorrSum;
         if(OrbitalM %2 == 0)
         {
-                Fdata << "the Qubit correlation = " <<CorrLenth<<std::endl;
+                Fdata << "the Qubit correlation is " <<CorrLenth<<std::endl;
                 std::cout << "the Qubit correlated length = " <<CorrLenth<<std::endl;
         }else
         {
-                Fdata << "the Resonator correlation = " <<CorrLenth<<std::endl;
+                Fdata << "the Resonator correlation is " <<CorrLenth<<std::endl;
                 std::cout << "the Resonator correlated length = " <<CorrLenth<<std::endl;
         }
 
@@ -388,3 +388,111 @@ void calcudensity(const int& OrbitalM, const QWave& fwave, const int& endN)
 }
 
 //===================================================================================================
+
+
+
+//====================calculate the structure factor==================================================
+double QdenCorr(const QWave& fwave, const int& OrbitalM, const int& orbital);
+double QdenCorr(const QWave& fwave, const int& OrbitalM, const int& orbital)
+{
+        QWave wave1;
+        if(orbital < OrbitalM)
+        {
+                Corr corr;
+                corr.read(orbital, 5);
+                wave1.OSWave2New(corr.CorrO, fwave);
+        }else if(orbital > OrbitalM)
+        {
+                Corr corr1, corr2;
+                corr1.read(1, 3);corr2.read(orbital, 3);
+                QWave wave2;
+                wave2.OEWave2New(corr2.CorrO, fwave);
+                wave1.OSWave2New(corr1.CorrO, wave2);
+        }else
+        {
+                Parameter para;
+                para.read();
+
+                Sub m(para, OrbitalM);
+
+                OP tempm;
+                tempm.time(m.SubSysCdag, m.SubSysC);
+
+                QWave wave2;
+                wave2.OMWave2New(tempm, fwave);
+
+                Corr corr1;
+                corr1.read(1, 3);
+                wave1.OSWave2New(corr1.CorrO, wave2);
+        }
+
+
+        return prod2wave(wave1, fwave);
+}
+
+
+
+double RdenCorr(const QWave& fwave, const int& OrbitalM, const int& orbital);
+double RdenCorr(const QWave& fwave, const int& OrbitalM, const int& orbital)
+{
+        QWave wave1;
+        if(orbital < OrbitalM)
+        {
+                Corr corr;
+                corr.read(orbital, 7);
+                wave1.OSWave2New(corr.CorrO, fwave);
+        }else if(orbital > OrbitalM)
+        {
+                Corr corr1, corr2;
+                corr1.read(2, 3);corr2.read(orbital, 3);
+                QWave wave2;
+                wave2.OEWave2New(corr2.CorrO, fwave);
+                wave1.OSWave2New(corr1.CorrO, wave2);
+        }else
+        {
+                Parameter para;
+                para.read();
+
+                Sub m(para, OrbitalM);
+
+                OP tempm;
+                tempm.time(m.SubSysCdag, m.SubSysC);
+
+                QWave wave2;
+                wave2.OMWave2New(tempm, fwave);
+
+                Corr corr1;
+                corr1.read(2, 3);
+                wave1.OSWave2New(corr1.CorrO, wave2);
+        }
+
+
+        return prod2wave(wave1, fwave);
+}
+
+
+
+double calcustructure(const QWave& fwave, const int& OrbitalM, const int& endN, std::ofstream& Fdata);
+double calcustructure(const QWave& fwave, const int& OrbitalM, const int& endN, std::ofstream& Fdata)
+{
+        double Sq(0), Sr(0);
+        int flag(1), fflag(1);
+
+        for(int i=1; i<=endN; ++i)
+        {
+                if(i%2 == 1)
+                {
+                        Sq += flag*QdenCorr(fwave, OrbitalM, i);
+                        flag*=-1;
+                }else
+                {
+                        Sr += fflag*RdenCorr(fwave, OrbitalM, i);
+                        fflag*=-1;
+                }
+        }
+        Sq /= endN;
+        Sr /= endN;
+
+        Fdata<<"the Qubit structure factor is "<<Sq<<std::endl;
+        Fdata<<"the Resonator structure factor is "<<Sr<<std::endl;
+}

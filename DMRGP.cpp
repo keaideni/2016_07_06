@@ -937,12 +937,44 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                         {
                                 corr.Initial(Sys, m, 1, 4, truncU);
                                 corr.save();
+                                //initialize the n1n1
+                                corr.Initial(Sys, m, 1, 5, truncU);//corr.show();
+                                corr.save();
+
+                                /*initialize the n1n2
+                                corr.Initial(Sys, m, 2, 6, truncU);//corr.show();
+                                corr.save();*/
+
+                                corr.Initial(Sys, m, 2, 7, truncU);//corr.show(); exit(1);
+                                corr.save();
+
+                        }else
+                        {
+                                Corr tempcorr;
+                                if(OrbitalM % 2 == 1)
+                                {
+                                        //initialize the n1ni.
+                                        
+                                        tempcorr.read(1, 3);
+                                        corr.Initial(tempcorr, m, OrbitalM, 5, truncU);
+                                        corr.save();
+                                }else
+                                {
+
+                                        tempcorr.read(2, 3);
+                                        corr.Initial(tempcorr, m, OrbitalM, 7, truncU);
+                                        corr.save();
+                                }
                         }
                         
                         corr.Initial(Sys, m, OrbitalM, 2, truncU);
                         corr.save();
                         corr.Initial(Sys, m, OrbitalM, 3, truncU);
                         corr.save();
+                        
+
+
+
                         for(int i = 2; i < OrbitalM; ++i)
                         {
                                 corr.read(i, 2);
@@ -956,6 +988,22 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                                 corr.read(i, 3);
                                 corr.update(m, truncU, 1);
                                 corr.save();
+                                if(i%2 == 1)
+                                {
+                                        //update the n1ni, i is an old.
+                                        corr.read(i, 5);
+                                        corr.update(m, truncU, 1);
+                                        corr.save();
+                                }else
+                                {
+                                        //update the n2ni, i is an even.
+                                        //if(i==1)continue;
+                                        corr.read(i, 7);
+                                        corr.update(m, truncU, 1);
+                                        corr.save();
+                                }
+
+
 
                         }
                 }//when the block Env eat the point n, the corr1 only update.
@@ -978,6 +1026,20 @@ void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
                                 
                                 corr.update(n, truncU, 2);
                                 corr.save();
+
+                                if(i%2 == 1)
+                                {
+                                        corr.read(i, 5);
+                                        corr.update(n, truncU, 2);
+                                        corr.save();
+                                }else
+                                {
+
+                                        //if(i==1)continue;
+                                        corr.read(i, 7);
+                                        corr.update(n, truncU, 2);
+                                        corr.save();
+                                }
 
 
                         }

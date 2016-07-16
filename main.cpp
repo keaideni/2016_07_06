@@ -27,13 +27,11 @@ int main()
 
 	std::ofstream Fdata("./result/data", std::ios_base::out | std::ios_base::app);
 	CalcuCorr(DMRG.OrbitalM, DMRG.fwave, Fdata);
+	calcustructure(DMRG.fwave, DMRG.OrbitalM, para.ParticleNo, Fdata);
 	Fdata.close();
 
 
 	calcudensity(DMRG.OrbitalM, DMRG.fwave, para.ParticleNo);
 
-
-
 	
-	system("pause");
 }
